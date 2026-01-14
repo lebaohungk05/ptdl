@@ -1,12 +1,12 @@
 import pandas as pd
 import matplotlib
-matplotlib.use('Agg') # Set backend to non-interactive
+matplotlib.use('Agg') 
 import seaborn as sns
 import matplotlib.pyplot as plt
-import plotly.express as px
+
 import os
 
-# Data path
+
 input_path = r'final_dataset.csv'
 
 def visualize_data():
@@ -29,32 +29,48 @@ def visualize_data():
     except Exception as e:
         print(f"Error drawing heatmap: {e}")
 
-    # CHART 2: INTERACTIVE TREND LINE
+    # CHART 2: TREND LINE (STATIC PNG)
     try:
         top_countries = ['VNM', 'JPN', 'CHN', 'IND', 'THA']
         subset_df = df[df['CountryCode'].isin(top_countries)]
         
-        fig_line = px.line(subset_df, x='Year', y='Unemployment', color='CountryName',
-                      markers=True,
-                      title='Unemployment Rate Comparison: Vietnam vs Asian Powers',
-                      labels={'Unemployment': 'Unemployment Rate (%)'})
-        
-        fig_line.write_html("chart_2_trend_interactive.html")
-        print("Saved: chart_2_trend_interactive.html")
+        plt.figure(figsize=(10, 6))
+        sns.lineplot(data=subset_df, x='Year', y='Unemployment', hue='CountryName', marker='o')
+        plt.title('Unemployment Rate Comparison: Vietnam vs Asian Powers')
+        plt.ylabel('Unemployment Rate (%)')
+        plt.grid(True, linestyle='--', alpha=0.7)
+        plt.tight_layout()
+        plt.savefig('chart_2_trend_comparison.png')
+        print("Saved: chart_2_trend_comparison.png")
+        plt.close()
     except Exception as e:
         print(f"Error drawing line chart: {e}")
 
-    # CHART 3: BUBBLE CHART ANIMATION
+    # CHART 3: BUBBLE CHART (STATIC PNG - LATEST YEAR)
     try:
-        fig_bubble = px.scatter(df, x="MinWage", y="Unemployment",
-                         animation_frame="Year", animation_group="CountryName",
-                         size="Schooling", color="CountryName", 
-                         hover_name="CountryName",
-                         log_x=True, size_max=45, range_y=[0, 20],
-                         title="Asian Economic Trends (2015-2024)")
+        # Get latest year data
+        max_year = df['Year'].max()
+        latest_df = df[df['Year'] == max_year]
         
-        fig_bubble.write_html("chart_3_bubble_animation.html")
-        print("Saved: chart_3_bubble_animation.html")
+        plt.figure(figsize=(10, 6))
+        # Bubble chart: x=MinWage, y=Unemployment, size=Schooling
+        sns.scatterplot(data=latest_df, x='MinWage', y='Unemployment', 
+                        size='Schooling', hue='CountryName', 
+                        sizes=(50, 500), alpha=0.7, legend=False)
+        
+        # Add labels for some points to make it informative
+        for i in range(latest_df.shape[0]):
+             plt.text(latest_df.MinWage.iloc[i], latest_df.Unemployment.iloc[i], 
+                      latest_df.CountryCode.iloc[i], fontsize=9, alpha=0.7)
+
+        plt.title(f'Asian Economic Snapshot ({max_year})\n(Size = Schooling Years)')
+        plt.xlabel('Minimum Wage (USD)')
+        plt.ylabel('Unemployment Rate (%)')
+        plt.grid(True, linestyle='--', alpha=0.5)
+        plt.tight_layout()
+        plt.savefig('chart_3_bubble_snapshot.png')
+        print("Saved: chart_3_bubble_snapshot.png")
+        plt.close()
     except Exception as e:
         print(f"Error drawing bubble chart: {e}")
         
