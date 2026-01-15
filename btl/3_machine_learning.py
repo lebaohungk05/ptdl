@@ -119,8 +119,9 @@ def run_advanced_machine_learning():
             plt.ylabel('Predicted Unemployment (%)')
             plt.grid(True, alpha=0.5)
             plt.tight_layout()
-            plt.savefig('chart_6_prediction_vs_actual.png')
-            log_print(f, "   Saved chart: chart_6_prediction_vs_actual.png")
+            output_chart_path = os.path.join('btl', 'chart_6_prediction_vs_actual.png') if os.path.exists('btl') else 'chart_6_prediction_vs_actual.png'
+            plt.savefig(output_chart_path)
+            log_print(f, f"   Saved chart: {output_chart_path}")
             plt.close()
         except Exception as e:
             log_print(f, f"Error drawing pred vs actual: {e}")

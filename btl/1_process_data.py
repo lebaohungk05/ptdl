@@ -2,7 +2,7 @@ import pandas as pd
 import numpy as np
 import os
 
-input_path = r'../data_ktl_group4.csv'
+input_path = r'data_ktl_group4.csv'
 
 output_path = r'final_dataset.csv'
 

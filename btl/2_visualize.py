@@ -17,14 +17,20 @@ def visualize_data():
     df = pd.read_csv(input_path)
     print("--- STARTING VISUALIZATION ---")
 
+    # Define output directory
+    output_dir = 'btl'
+    if not os.path.exists(output_dir):
+        os.makedirs(output_dir)
+
     # CHART 1: CORRELATION HEATMAP
     try:
         plt.figure(figsize=(10, 8))
         corr = df[['Schooling', 'MinWage', 'Unemployment', 'MinWage_Growth', 'Unemployment_LastYear']].corr()
         sns.heatmap(corr, annot=True, cmap='coolwarm', fmt=".2f")
         plt.title('Correlation Matrix')
-        plt.savefig('chart_1_correlation_heatmap.png')
-        print("Saved: chart_1_correlation_heatmap.png")
+        save_path = os.path.join(output_dir, 'chart_1_correlation_heatmap.png')
+        plt.savefig(save_path)
+        print(f"Saved: {save_path}")
         plt.close()
     except Exception as e:
         print(f"Error drawing heatmap: {e}")
@@ -40,8 +46,9 @@ def visualize_data():
         plt.ylabel('Unemployment Rate (%)')
         plt.grid(True, linestyle='--', alpha=0.7)
         plt.tight_layout()
-        plt.savefig('chart_2_trend_comparison.png')
-        print("Saved: chart_2_trend_comparison.png")
+        save_path = os.path.join(output_dir, 'chart_2_trend_comparison.png')
+        plt.savefig(save_path)
+        print(f"Saved: {save_path}")
         plt.close()
     except Exception as e:
         print(f"Error drawing line chart: {e}")
@@ -68,11 +75,104 @@ def visualize_data():
         plt.ylabel('Unemployment Rate (%)')
         plt.grid(True, linestyle='--', alpha=0.5)
         plt.tight_layout()
-        plt.savefig('chart_3_bubble_snapshot.png')
-        print("Saved: chart_3_bubble_snapshot.png")
+        save_path = os.path.join(output_dir, 'chart_3_bubble_snapshot.png')
+        plt.savefig(save_path)
+        print(f"Saved: {save_path}")
         plt.close()
     except Exception as e:
         print(f"Error drawing bubble chart: {e}")
+
+    # CHART 4: BAR CHART - Schooling Comparison (Latest Year)
+    try:
+        max_year = df['Year'].max()
+        latest_df = df[df['Year'] == max_year].sort_values('Schooling', ascending=False)
+        
+        plt.figure(figsize=(12, 8))
+        sns.barplot(data=latest_df, x='Schooling', y='CountryName', palette='magma')
+        plt.title(f'Mean Years of Schooling by Country ({max_year})')
+        plt.xlabel('Years')
+        plt.ylabel('Country')
+        plt.tight_layout()
+        save_path = os.path.join(output_dir, 'chart_4_bar_schooling.png')
+        plt.savefig(save_path)
+        print(f"Saved: {save_path}")
+        plt.close()
+    except Exception as e:
+        print(f"Error drawing bar chart: {e}")
+
+    # CHART 5: PIE CHART - Unemployment Classification (Latest Year)
+    try:
+        max_year = df['Year'].max()
+        latest_df = df[df['Year'] == max_year].copy()
+        
+        def classify_unemployment(rate):
+            if rate < 3: return 'Low (<3%)'
+            elif rate <= 7: return 'Medium (3-7%)'
+            else: return 'High (>7%)'
+            
+        latest_df['Category'] = latest_df['Unemployment'].apply(classify_unemployment)
+        counts = latest_df['Category'].value_counts()
+        
+        plt.figure(figsize=(8, 8))
+        plt.pie(counts, labels=counts.index, autopct='%1.1f%%', startangle=140, colors=['#66b3ff','#99ff99','#ff9999'])
+        plt.title(f'Distribution of Countries by Unemployment Level ({max_year})')
+        save_path = os.path.join(output_dir, 'chart_5_pie_unemployment.png')
+        plt.savefig(save_path)
+        print(f"Saved: {save_path}")
+        plt.close()
+    except Exception as e:
+        print(f"Error drawing pie chart: {e}")
+
+    # CHART 6: BOX PLOT - Unemployment Distribution Over Years
+    try:
+        plt.figure(figsize=(12, 6))
+        sns.boxplot(data=df, x='Year', y='Unemployment', palette='Set3')
+        plt.title('Distribution of Unemployment Rate (2015-2024)')
+        plt.ylabel('Unemployment Rate (%)')
+        plt.grid(True, axis='y', linestyle='--', alpha=0.5)
+        save_path = os.path.join(output_dir, 'chart_6_box_unemployment.png')
+        plt.savefig(save_path)
+        print(f"Saved: {save_path}")
+        plt.close()
+    except Exception as e:
+        print(f"Error drawing box plot: {e}")
+
+    # CHART 7: SCATTER PLOT - Schooling vs Minimum Wage (All Years)
+    try:
+        plt.figure(figsize=(10, 6))
+        sns.scatterplot(data=df, x='Schooling', y='MinWage', hue='Year', palette='viridis', alpha=0.6)
+        plt.title('Correlation: Education vs Minimum Wage (All Years)')
+        plt.xlabel('Mean Years of Schooling')
+        plt.ylabel('Minimum Wage (USD)')
+        plt.grid(True, linestyle='--', alpha=0.5)
+        save_path = os.path.join(output_dir, 'chart_7_scatter_schooling_wage.png')
+        plt.savefig(save_path)
+        print(f"Saved: {save_path}")
+        plt.close()
+    except Exception as e:
+        print(f"Error drawing scatter plot: {e}")
+
+    # CHART 8: REGRESSION PLOT (Last Year vs This Year)
+    try:
+        # Filter out rows where Unemployment_LastYear is 0 (first years)
+        plot_df = df[df['Unemployment_LastYear'] > 0]
+        
+        plt.figure(figsize=(10, 6))
+        sns.regplot(data=plot_df, x='Unemployment_LastYear', y='Unemployment', 
+                    scatter_kws={'alpha':0.5, 'color':'teal'}, 
+                    line_kws={'color':'red'})
+        
+        plt.title('Predictive Power: Unemployment (Last Year) vs (This Year)')
+        plt.xlabel('Unemployment Rate Last Year (%)')
+        plt.ylabel('Unemployment Rate This Year (%)')
+        plt.grid(True, linestyle='--', alpha=0.5)
+        plt.tight_layout()
+        save_path = os.path.join(output_dir, 'chart_8_lag_regression.png')
+        plt.savefig(save_path)
+        print(f"Saved: {save_path}")
+        plt.close()
+    except Exception as e:
+        print(f"Error drawing regression plot: {e}")
         
     print("--- VISUALIZATION COMPLETE ---")
 
