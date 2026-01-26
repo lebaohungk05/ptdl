@@ -1,0 +1,38 @@
+--- EXPLORATORY DATA ANALYSIS REPORT ---\n\n1. BASIC STATISTICS\n              Year  Unemployment Rate  Mean Years of Schooling  Minimum Wage (PPP)     GDP (PPP)  Inflation Rate - CPI (%)  Labor force participation rate (%)  Population growth (%)  Employment rate, male (%)
+count   360.000000         360.000000               360.000000          360.000000  3.600000e+02                360.000000                          360.000000             360.000000                 360.000000
+mean   2019.500000           6.060056                 9.001862          520.043214  1.635589e+12                  7.857083                           65.270456               1.284252                  27.370835
+std       2.876279           4.623827                 2.885678          430.221034  4.851161e+12                 18.368960                           11.632273               1.241585                   7.472301
+min    2015.000000           0.119000                 2.124310            0.084000  3.745031e+09                 -7.700000                           36.660000              -3.218371                   8.521676
+25%    2017.000000           2.849000                 6.520000          249.751000  7.107014e+10                  2.100000                           56.820500               0.697749                  23.100005
+50%    2019.500000           4.516500                 9.977240          394.458500  2.100000e+11                  4.207002                           68.107000               1.241718                  27.250295
+75%    2022.000000           9.211250                11.274044          639.517000  9.777500e+11                  7.358909                           72.783500               1.872834                  31.702485
+max    2024.000000          19.837000                13.534595         1805.801000  3.820000e+13                221.341721                           86.135000               8.217983                  51.667323\n\n2. MISSING VALUES\nCountry Code                          0
+Country Name                          0
+Year                                  0
+Unemployment Rate                     0
+Mean Years of Schooling               0
+Minimum Wage (PPP)                    0
+GDP (PPP)                             0
+Inflation Rate - CPI (%)              0
+Labor force participation rate (%)    0
+Population growth (%)                 0
+Employment rate, male (%)             0\n\n3. CORRELATION MATRIX\n                                        Year  Unemployment Rate  Mean Years of Schooling  Minimum Wage (PPP)  GDP (PPP)  Inflation Rate - CPI (%)  Labor force participation rate (%)  Population growth (%)  Employment rate, male (%)
+Year                                1.000000          -0.014747                 0.074982            0.117434   0.071350                  0.195451                           -0.046124              -0.133040                   0.056515
+Unemployment Rate                  -0.014747           1.000000                 0.115936           -0.106978  -0.096216                  0.143961                           -0.668860              -0.019974                  -0.141173
+Mean Years of Schooling             0.074982           0.115936                 1.000000            0.380996  -0.080548                  0.105704                            0.073070              -0.082472                   0.393306
+Minimum Wage (PPP)                  0.117434          -0.106978                 0.380996            1.000000   0.012304                 -0.087862                            0.061057               0.038853                   0.439848
+GDP (PPP)                           0.071350          -0.096216                -0.080548            0.012304   1.000000                 -0.063603                            0.044189              -0.201054                   0.158535
+Inflation Rate - CPI (%)            0.195451           0.143961                 0.105704           -0.087862  -0.063603                  1.000000                           -0.231360              -0.121642                  -0.001759
+Labor force participation rate (%) -0.046124          -0.668860                 0.073070            0.061057   0.044189                 -0.231360                            1.000000              -0.018347                   0.018255
+Population growth (%)              -0.133040          -0.019974                -0.082472            0.038853  -0.201054                 -0.121642                           -0.018347               1.000000                   0.194062
+Employment rate, male (%)           0.056515          -0.141173                 0.393306            0.439848   0.158535                 -0.001759                            0.018255               0.194062                   1.000000\n\n4. TOP 5 COUNTRIES - HIGHEST UNEMPLOYMENT (AVG)\nCountry Name
+Jordan         17.4743
+Armenia        16.4449
+Iraq           14.0714
+Georgia        12.9466
+Afghanistan    11.7840\n\n5. TOP 5 COUNTRIES - HIGHEST GDP (AVG)\nCountry Name
+China        2.683000e+13
+India        1.077800e+13
+Japan        5.584000e+12
+Indonesia    3.427000e+12
+Thailand     1.420000e+12\n\n

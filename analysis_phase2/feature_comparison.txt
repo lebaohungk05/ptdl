@@ -1,0 +1,17 @@
+--- FEATURE IMPORTANCE COMPARISON ---
+
+SCENARIO 1: BASIC FEATURES ONLY
+Features Used: ['Mean Years of Schooling', 'Minimum Wage (PPP)', 'GDP (PPP)', 'Inflation Rate - CPI (%)', 'Labor force participation rate (%)', 'Population growth (%)', 'Employment rate, male (%)']
+RMSE: 3.0784
+R2 Score: 0.5402
+
+SCENARIO 2: WITH ENGINEERED FEATURES (Lag + Growth)
+Features Used: ['Mean Years of Schooling', 'Minimum Wage (PPP)', 'GDP (PPP)', 'Inflation Rate - CPI (%)', 'Labor force participation rate (%)', 'Population growth (%)', 'Employment rate, male (%)', 'Unemployment_Lag1', 'Wage_Growth']
+RMSE: 0.8676
+R2 Score: 0.9667
+
+--- CONCLUSION ---
+Improvement in R2: +42.65%
+Reduction in RMSE: 2.2109
+VERDICT: Adding 'Unemployment_Lag1' and 'Wage_Growth' significantly IMPROVED model performance.
+Explanation: Unemployment rates have high autocorrelation (inertia). Knowing last year's rate is the best predictor for this year.

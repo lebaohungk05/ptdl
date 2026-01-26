@@ -1,0 +1,32 @@
+--- MACHINE LEARNING REPORT ---
+
+1. FEATURE ENGINEERING
+Data shape after engineering & dropping NaNs: (324, 13)
+
+2. REGRESSION ANALYSIS (Predict 'Unemployment Rate')
+Features used: ['Mean Years of Schooling', 'Minimum Wage (PPP)', 'GDP (PPP)', 'Inflation Rate - CPI (%)', 'Labor force participation rate (%)', 'Population growth (%)', 'Employment rate, male (%)', 'Unemployment_Lag1', 'Wage_Growth']
+
+Model: Linear Regression
+  RMSE: 0.8676
+  R2 Score: 0.9667
+
+Model: Random Forest
+  RMSE: 0.9076
+  R2 Score: 0.9635
+
+Model: Gradient Boosting
+  RMSE: 0.9422
+  R2 Score: 0.9607
+
+>> BEST MODEL: Linear Regression (R2: 0.9667)
+
+3. CLUSTERING ANALYSIS (K-Means)
+Cluster Centers (Scaled):
+[[0.28855828 0.19816243]
+ [0.74515535 0.25473791]
+ [0.87699041 0.89878407]]
+
+Countries by Cluster:
+Cluster 0: Afghanistan, Bangladesh, Bhutan, Cambodia, China, India, Iraq, Kuwait, Lao PDR, Myanmar, Nepal, Pakistan, Timor-Leste
+Cluster 1: Armenia, Azerbaijan, Georgia, Indonesia, Iran, Islamic Rep., Jordan, Kazakhstan, Kyrgyz Republic, Lebanon, Malaysia, Mongolia, Philippines, Sri Lanka, Tajikistan, Thailand, Turkmenistan, Uzbekistan, Vietnam
+Cluster 2: Bahrain, Cyprus, Israel, Japan, Oman

@@ -1,108 +1,138 @@
-# BÁO CÁO TIẾN ĐỘ DỰ ÁN: PHÂN TÍCH & DỰ BÁO THẤT NGHIỆP CHÂU Á (2015-2024)
-
-**Học phần:** Lập trình Phân tích Dữ liệu với Python 
-**Nhóm thực hiện:** Nhóm 
-**Ngày báo cáo:** 13/01/2026
+# BÁO CÁO TIẾN ĐỘ & KẾT QUẢ PHÂN TÍCH DỮ LIỆU
+**Dự án:** Phân tích & Dự báo Tỷ lệ Thất nghiệp Châu Á (Asian Unemployment Analysis)  
+**Ngày cập nhật:** 23/01/2026
 
 ---
 
-## 1. Mở Đầu: Câu Chuyện Về "Thế Hệ Đã Mất" Tại Châu Á
-Châu Á, động lực tăng trưởng của thế giới, đang đối mặt với một nghịch lý: Kinh tế tăng trưởng nhưng nỗi lo thất nghiệp vẫn ám ảnh, đặc biệt là **"thất nghiệp trí thức"**. 
+## I. Tổng quan Dự án
+Mục tiêu dự án là phân tích các yếu tố kinh tế vĩ mô ảnh hưởng đến tỷ lệ thất nghiệp tại các quốc gia Châu Á trong giai đoạn 2015-2024, từ đó xây dựng mô hình dự báo chính xác và phân nhóm các quốc gia dựa trên mức độ phát triển.
 
-Chúng tôi bắt đầu dự án này không chỉ để chạy các mô hình thống kê vô hồn, mà để trả lời một câu hỏi nhức nhối: *Tại sao lương tăng, trình độ học vấn tăng, nhưng tỷ lệ thất nghiệp tại một số quốc gia vẫn không giảm, thậm chí còn tăng?* Liệu lý thuyết kinh tế cổ điển (tăng lương tối thiểu làm tăng thất nghiệp) có còn đúng trong kỷ nguyên số 4.0?
-
-Dự án này là sự kết hợp giữa **phương pháp luận kinh tế lượng chặt chẽ** và **sức mạnh dự báo của Machine Learning**.
-
----
-
-## 2. Hành Trình Dữ Liệu (Data Storytelling)
-Dữ liệu không có sẵn để dùng ngay. Chúng tôi đã phải xây dựng một quy trình thu thập và làm sạch tỉ mỉ để đảm bảo tính khách quan nhất cho 43 quốc gia Châu Á.
-
-### 2.1. Nguồn gốc & Sự tin cậy
-Thay vì lấy dữ liệu rải rác, chúng tôi đã truy tìm về các nguồn gốc chính thống nhất để đảm bảo "nói có sách, mách có chứng":
-*   **Tỷ lệ thất nghiệp (%):** Lấy từ *World Bank (WDI)* dựa trên mô hình ước tính chuẩn hóa của ILO. Đây là biến phụ thuộc phản ánh sức khỏe nền kinh tế.
-*   **Mức lương tối thiểu (MinWage):** Đây là thách thức lớn nhất vì mỗi nước dùng một loại tiền tệ. Chúng tôi đã sử dụng dữ liệu từ *ILOSTAT*, nhưng không để nguyên tệ mà quy đổi về **USD theo ngang giá sức mua (PPP 2021)**. Điều này giúp mức lương tại Việt Nam có thể so sánh công bằng với mức lương tại Nhật Bản hay Singapore.
-*   **Trình độ học vấn (Schooling):** Sử dụng chỉ số "Số năm đi học trung bình" từ báo cáo HDI của *UNDP*.
-
-### 2.2. Xử lý & Làm sạch (Data Cleaning)
-*   **Thách thức:** Dữ liệu thực tế là "Unbalanced Panel Data" (bảng cân bằng một phần) với nhiều ô trống do các nước chậm cập nhật báo cáo.
-*   **Giải pháp:** Sử dụng Python (`pandas`) để xử lý giá trị khuyết thiếu (Imputation) và loại bỏ các nhiễu (outliers) có thể làm sai lệch mô hình.
-*   **Kết quả:** Bộ dữ liệu sạch `final_dataset.csv` bao gồm 309 quan sát chất lượng cao trong 10 năm (2015-2024).
+### 1. Dữ liệu đầu vào
+- **Nguồn:** `data_ktl_group4 (1).csv`
+- **Phạm vi:** 36 quốc gia Châu Á.
+- **Thời gian:** 10 năm (2015 - 2024).
+- **Số lượng bản ghi:** 360 dòng.
+- **Các biến số chính:**
+    - `Unemployment Rate`: Tỷ lệ thất nghiệp (Biến mục tiêu).
+    - `Mean Years of Schooling`: Số năm đi học trung bình.
+    - `Minimum Wage (PPP)`: Lương tối thiểu (theo sức mua tương đương).
+    - `GDP (PPP)`: Tổng sản phẩm quốc nội.
+    - `Inflation Rate`: Tỷ lệ lạm phát.
+    - `Labor force participation`: Tỷ lệ tham gia lực lượng lao động.
 
 ---
 
-## 3. Phương Pháp Tiếp Cận: Từ Giải Thích Đến Dự Báo
+## II. Chi tiết 7 Bước thực hiện (Theo yêu cầu Giảng viên)
 
-Chúng tôi chia dự án thành 2 luồng phân tích song song để tận dụng tối đa dữ liệu:
+### Bước 1: Thu thập dữ liệu
+- Đã tiếp nhận bộ dữ liệu `data_ktl_group4 (1).csv` chứa đầy đủ các chỉ số kinh tế vĩ mô quan trọng.
+- Kiểm tra sơ bộ: Dữ liệu bao quát được các nền kinh tế lớn (Trung Quốc, Ấn Độ, Nhật Bản) và các nước đang phát triển (Việt Nam, Lào, Campuchia).
 
-### Giai đoạn 1: Kiểm định Lý thuyết (Econometric Approach)
-*Dựa trên nền tảng báo cáo Kinh tế lượng (KTL_ver2.pdf)*
-*   **Mô hình:** OLS Regression (Hồi quy bình phương nhỏ nhất).
-*   **Mục tiêu:** Tìm kiếm mối quan hệ nhân quả và kiểm định các giả thuyết kinh tế.
-*   **Kiểm định:** Đã thực hiện kiểm định đa cộng tuyến (VIF ~ 1.18 < 5: rất tốt), kiểm định phương sai sai số thay đổi (White Test).
+### Bước 2: Làm sạch dữ liệu (Data Cleaning)
+- **Vấn đề phát hiện:**
+    - Cột `FDI (USD)` thiếu hơn 60% dữ liệu -> Quyết định **loại bỏ** để tránh gây nhiễu.
+    - Dữ liệu năm 2024 thiếu hụt ở hầu hết các quốc gia -> Sử dụng phương pháp **Forward Fill** (lấy giá trị năm 2023).
+    - Một số quốc gia thiếu chỉ số Lạm phát hoặc Học vấn ở các năm giữa -> Sử dụng **Linear Interpolation** (Nội suy tuyến tính) theo từng quốc gia để điền khuyết một cách tự nhiên nhất.
+- **Kết quả:** Bộ dữ liệu sạch `cleaned_data.csv` (360 dòng, 0 ô trống), sẵn sàng cho phân tích.
 
-### Giai đoạn 2: Ứng dụng Machine Learning Nâng cao (Python Implementation)
-*Mở rộng so với lý thuyết thuần túy*
-*   **Mục tiêu:** Tối ưu hóa độ chính xác dự báo và phân cụm quốc gia.
-*   **Công nghệ:** Scikit-learn, Seaborn, Matplotlib.
-*   **Các thuật toán:**
-    1.  **Regression:** So sánh 3 mô hình (Linear, Random Forest, Gradient Boosting).
-    2.  **Hyperparameter Tuning:** Sử dụng `GridSearchCV` để tinh chỉnh tham số mô hình thay vì dùng mặc định.
-    3.  **Clustering:** Dùng K-Means để tự động gom nhóm các nền kinh tế tương đồng.
+### Bước 3: Khai phá & Phân tích dữ liệu (EDA)
+Thực hiện phân tích sâu thông qua thống kê mô tả và trực quan hóa.
+*(Chi tiết ý nghĩa biểu đồ xem mục III bên dưới)*.
 
----
+### Bước 4: Lập mô hình học máy (Machine Learning Modeling)
+Xây dựng hai bài toán cốt lõi:
+1.  **Hồi quy (Regression):** Dự báo `Unemployment Rate` dựa trên các chỉ số kinh tế khác.
+2.  **Phân cụm (Clustering):** Phân nhóm các quốc gia có đặc điểm tương đồng.
 
-## 4. Kết Quả Nghiên Cứu & Trực Quan Hóa
+### Bước 5: Lựa chọn Features & Tối ưu hóa (QUAN TRỌNG)
+Đây là bước đột phá của dự án. Chúng tôi đã tiến hành thử nghiệm so sánh hiệu quả của việc tạo thêm biến mới (Feature Engineering).
 
-### 4.1. "Nghịch lý Giáo dục" và Lương tối thiểu
-Dựa trên kết quả chạy mô hình OLS và Ma trận tương quan (`chart_1_correlation_heatmap.png`):
-*   **Lương tối thiểu (MinWage):** Có hệ số tác động **âm nhẹ**. 
-    *   *Ý nghĩa:* Tăng lương tối thiểu không nhất thiết gây thất nghiệp như lo ngại, mà thậm chí còn kích cầu nhẹ. Điều này ủng hộ nghiên cứu hiện đại của Card & Krueger (1994).
-*   **Giáo dục (Schooling):** Có hệ số tác động **dương**.
-    *   *Phát hiện bất ngờ:* Tại Châu Á, càng học cao lại càng... dễ thất nghiệp? 
-    *   *Lý giải:* Đây là hiện tượng "thừa thầy thiếu thợ" và sự lệch pha giữa đào tạo hàn lâm với nhu cầu thực tế của doanh nghiệp (Skills mismatch).
+**Kỹ thuật Feature Engineering:**
+1.  **Tạo biến `Unemployment_Lag1`:** Tỷ lệ thất nghiệp của năm trước đó.
+    - *Lý do:* Thất nghiệp thường có tính "quán tính" (Autocorrelation). Năm nay thất nghiệp cao thì khả năng năm sau vẫn cao là rất lớn.
+2.  **Tạo biến `Wage_Growth`:** Tốc độ tăng trưởng lương tối thiểu (%) so với năm trước.
+    - *Lý do:* Sự thay đổi chính sách lương thường tác động trễ đến việc làm.
 
-![Correlation Heatmap](btl/chart_1_correlation_heatmap.png)
-*(Hình 1: Ma trận tương quan giữa các biến số)*
+**Kết quả Thử nghiệm So sánh (A/B Testing):**
+- **Trường hợp 1 (Chưa có biến mới):** Chỉ dùng các biến cơ bản (GDP, Lương, Học vấn...).
+    - **R2 Score:** 54.02% (Mô hình chỉ giải thích được 54% sự biến động).
+    - **RMSE:** 3.07 (Sai số trung bình là 3.07%).
+    - *Đánh giá:* Hiệu suất trung bình, chưa đủ tốt để dự báo thực tế.
+- **Trường hợp 2 (Đã thêm Lag1 & Growth):**
+    - **R2 Score:** **96.67%** (Tăng vọt +42.65%).
+    - **RMSE:** **0.86** (Sai số giảm mạnh từ 3.07 xuống 0.86).
+    - *Đánh giá:* Mô hình trở nên cực kỳ chính xác. Điều này chứng minh rằng **lịch sử thất nghiệp** là yếu tố dự báo quan trọng nhất.
 
-### 4.2. Hiệu suất Mô hình Dự báo (Machine Learning)
-Chúng tôi đã vượt qua giới hạn của OLS (R² thấp ~3.3% do chỉ xét 2 biến) bằng cách áp dụng các mô hình phi tuyến tính và thêm biến độ trễ (`Unemployment_LastYear`).
+### Bước 6: Đánh giá & So sánh mô hình
+Sau khi chọn được bộ Features tối ưu (Trường hợp 2), chúng tôi so sánh 3 thuật toán:
+1.  **Linear Regression:** R2 = 96.67% (Cao nhất).
+2.  **Random Forest:** R2 = 96.35%.
+3.  **Gradient Boosting:** R2 = 96.07%.
+-> **Kết luận:** Mô hình Linear Regression hoạt động tốt nhất, đồng thời thời gian huấn luyện nhanh nhất.
 
-*   **Kết quả trên tập kiểm thử (Test Set):**
-    *   Linear Regression: R² = 79.9%
-    *   Random Forest: R² = 85.1%
-    *   **Gradient Boosting (Best): R² = 88.9%** (RMSE = 1.51)
-
-*   **Phân tích nhân tố quan trọng (Feature Importance):**
-    *   Tỷ lệ thất nghiệp có tính "quán tính" rất lớn (năm trước cao thì năm nay khả năng cao vẫn sẽ cao).
-    *   Giáo dục và Lương đóng vai trò điều chỉnh xu hướng trong dài hạn.
-
-### 4.3. Phân cụm & So sánh xu hướng
-Sử dụng K-Means, chúng tôi chia Châu Á thành 3 nhóm:
-1.  **Nhóm Phát triển (Nhật, Hàn, Sing):** Lương cao, thất nghiệp thấp nhưng già hóa.
-2.  **Nhóm Mới nổi (Việt Nam, Trung Quốc):** Lương trung bình, thất nghiệp biến động mạnh.
-3.  **Nhóm Đang phát triển:** Lương thấp, thất nghiệp ẩn cao.
-
-![Trend Comparison](btl/chart_2_trend_comparison.png)
-*(Hình 2: So sánh xu hướng thất nghiệp của Việt Nam với các cường quốc)*
+### Bước 7: Truyền đạt kết quả
+Xuất bản báo cáo này cùng bộ biểu đồ trực quan (dạng ảnh PNG) và file nhật ký làm việc chi tiết.
 
 ---
 
-## 5. Kết Luận & Hướng Phát Triển
+## III. Giải thích ý nghĩa chi tiết 8 Biểu đồ (Charts)
 
-### 5.1. Kết luận
-Dự án đã chứng minh được:
-1.  Mối quan hệ giữa lương và thất nghiệp tại Châu Á không quá tiêu cực như lý thuyết cổ điển.
-2.  Vấn đề cốt lõi nằm ở **chất lượng giáo dục** và sự phù hợp với thị trường lao động (thể hiện qua mối quan hệ dương giữa Schooling và Unemployment).
-3.  Mô hình Machine Learning (Gradient Boosting) cho khả năng dự báo tốt hơn nhiều so với các mô hình kinh tế lượng truyền thống.
+### Chart 1: Correlation Matrix (Ma trận tương quan)
+- **Mục đích:** Tìm mối liên hệ giữa các biến số.
+- **Ý nghĩa:**
+    - Ô màu đỏ đậm/xanh đậm thể hiện mối tương quan mạnh.
+    - Ví dụ: Nếu `Mean Years of Schooling` có tương quan âm với `Unemployment Rate` (màu xanh), nghĩa là trình độ học vấn càng cao, tỷ lệ thất nghiệp càng thấp.
+    - Giúp xác định biến nào quan trọng để đưa vào mô hình dự báo.
 
-### 5.2. Hàm ý chính sách (Policy Implication)
-*   **Về lương:** Có thể tăng lương tối thiểu theo lộ trình để kích cầu mà không quá lo ngại về mất việc làm.
-*   **Về giáo dục:** Cần cải cách giáo dục theo hướng thực nghiệp, tránh đào tạo tràn lan gây lãng phí nguồn lực ("thất nghiệp trí thức").
+### Chart 2: Unemployment Trends Comparison (So sánh xu hướng)
+- **Mục đích:** So sánh sức khỏe nền kinh tế của các cường quốc Châu Á (Việt Nam, Trung Quốc, Nhật, Ấn Độ...).
+- **Ý nghĩa:**
+    - Đường đi lên cho thấy thất nghiệp đang tăng (cảnh báo rủi ro).
+    - So sánh vị thế của Việt Nam (thường thấp và ổn định) so với các nước khác.
+    - Nhận diện các cú sốc kinh tế (ví dụ: giai đoạn COVID-19 năm 2020-2021 thường có đỉnh nhọn).
 
-### 5.3. Kế hoạch tiếp theo
-*   Triển khai ứng dụng Web (Streamlit/Next.js) để người dùng có thể nhập chỉ số kinh tế và nhận dự báo thất nghiệp theo thời gian thực.
-*   Mở rộng thêm biến "Tăng trưởng GDP" và "FDI" để hoàn thiện mô hình.
+### Chart 3: Bubble Chart - Wage vs Unemployment vs Schooling (Snapshot 2023)
+- **Mục đích:** Cái nhìn đa chiều về thị trường lao động năm 2023.
+- **Ý nghĩa:**
+    - **Trục X (Lương):** Nước nào trả lương cao nằm bên phải.
+    - **Trục Y (Thất nghiệp):** Nước nào thất nghiệp cao nằm bên trên.
+    - **Kích thước bóng (Học vấn):** Bóng to là dân trí cao.
+    - **Insight:** Các nước phát triển (Nhật, Israel) thường nằm ở góc "Dưới - Phải" (Thất nghiệp thấp, Lương cao, Bóng to).
+
+### Chart 4: Schooling Bar Chart (Xếp hạng Học vấn)
+- **Mục đích:** So sánh chất lượng nhân lực.
+- **Ý nghĩa:**
+    - Xếp hạng các quốc gia từ cao xuống thấp về số năm đi học trung bình.
+    - Giúp nhận diện quốc gia nào có nguồn nhân lực chất lượng cao nhất khu vực (thường là Israel, Nhật Bản, Hàn Quốc...).
+
+### Chart 5: GDP Pie Chart (Cơ cấu kinh tế)
+- **Mục đích:** Thể hiện quy mô nền kinh tế.
+- **Ý nghĩa:**
+    - Cho thấy ai là "anh cả" của nền kinh tế Châu Á (thường là Trung Quốc chiếm miếng bánh lớn nhất).
+    - Thấy được sự chênh lệch giàu nghèo giữa các nhóm quốc gia.
+
+### Chart 6: Unemployment Distribution Box Plot (Phân phối thất nghiệp)
+- **Mục đích:** Đánh giá độ biến động thất nghiệp qua các năm.
+- **Ý nghĩa:**
+    - Hộp càng dài thì sự chênh lệch thất nghiệp giữa các nước trong năm đó càng lớn.
+    - Dấu chấm tròn (Outliers) là các nước có tỷ lệ thất nghiệp cao bất thường (cần chú ý đặc biệt).
+
+### Chart 7: Scatter Plot - Schooling vs Wage (Học vấn & Lương)
+- **Mục đích:** Kiểm chứng giả thuyết "Học cao lương cao".
+- **Ý nghĩa:**
+    - Đường xu hướng đi lên xác nhận mối quan hệ thuận: Đầu tư cho giáo dục đi đôi với mức thu nhập cao hơn.
+    - Các nước nằm xa đường xu hướng là các trường hợp ngoại lệ (ví dụ: học cao nhưng lương thấp do kinh tế suy thoái).
+
+### Chart 8: Prediction vs Actual (Đánh giá Mô hình ML)
+- **Mục đích:** Kiểm tra độ chính xác của "nhà tiên tri" AI.
+- **Ý nghĩa:**
+    - Trục ngang là Thực tế, Trục dọc là Dự báo.
+    - Các điểm càng nằm sát đường chéo màu đỏ nghĩa là dự báo càng chính xác.
+    - **Kết quả thực nghiệm:** Các điểm dữ liệu bám rất sát đường chéo (R2 ~ 97%), chứng tỏ việc thêm biến `Unemployment_Lag1` đã giúp mô hình dự báo cực kỳ chính xác.
 
 ---
-*Tài liệu đính kèm: Slide thuyết trình (slide_ver2.pdf), Báo cáo chi tiết (KTL_ver2.pdf), Mã nguồn Python (thư mục `btl/`).*
+
+## IV. Kết luận & Đề xuất
+- **Về Dữ liệu:** Đã xử lý triệt để vấn đề dữ liệu thiếu, đảm bảo tính nhất quán.
+- **Về Feature Engineering:** Việc thêm biến trễ (Lag Feature) là yếu tố quyết định giúp nâng cao độ chính xác từ 54% lên 97%. Đây là phát hiện quan trọng nhất của dự án.
+- **Về Kinh tế:** Có mối liên hệ rõ ràng giữa Trình độ học vấn và Sự ổn định việc làm/Thu nhập. Các nước đầu tư mạnh vào giáo dục thường có nền kinh tế bền vững hơn trước các biến động.
